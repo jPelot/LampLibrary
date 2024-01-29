@@ -38,6 +38,7 @@ void start(int pin, int num) {
   strand.begin();
   strand.clear();
   strand.setBrightness(255);
+  strandColor(255,255,255);
   strand.show();
 
 
