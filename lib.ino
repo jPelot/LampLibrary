@@ -21,10 +21,8 @@ int aState[7]  = {0,0,0,0,0,0,0};
 int tempSensorVal[50]; // Stores previous readings for tempSensor function
 
 
-
 Adafruit_NeoPixel strand; // Declare Neopixel object
 uint32_t strandColorVar = 0;
-
 
 
 // Starts neopixel, serial comms, and initializes vars
@@ -130,7 +128,7 @@ bool toggleButton(int pin) {
 // Potentiometer
 
 int pot(int pin) {
-  aState[pin] = analogRead(pin); // Read state of the pin, save to state array
+  aState[pin] = map(analogRead(pin), 0,1023,0,255);; // Read state of the pin, save to state array
 
   // Send status info to serial port
   Serial.print("Potentiometer on pin ");
@@ -146,17 +144,17 @@ int pot(int pin) {
 
 // Photoresistor
 // Takes a pin number, a min, and a max value
-// Min and max determine what section of the analog range (0 to 1023)
+// Min and max determine what section of the range (0 to 255)
 // should be considered in the output. The specified subsection is then mapped
-// back to the full analog range.
+// back to the full 8-bit range.
 
 int lightSensor(int pin, int minimum, int maximum) {
-  int a = analogRead(pin); // Creates variable 'a' of type 'int', reads the speficied pin, and writes the value to 'a'
+  int a = map(analogRead(pin), 0, 1023, 0, 255); // Creates variable 'a' of type 'int', reads the speficied pin, and writes the value to 'a'
 
   int aC = constrain(a, minimum, maximum);
   
   // Restricts analog range to min & max, and maps result back to full range
-  aState[pin] = map(aC, minimum, maximum, 0, 1023);
+  aState[pin] = map(aC, minimum, maximum, 0, 255);
 
   // Sends status info to serial
   Serial.print("Light Sensor on pin ");
@@ -178,7 +176,7 @@ int lightSensor(int pin, int minimum, int maximum) {
 int tempSensor(int pin, int minimum, int maximum) {
 
   // Read temp sensor, save to 'a'
-  int a = analogRead(pin);
+  int a = map(analogRead(pin), 0,1023,0,255);
 
   float average = 0; // Stores average of previous readings
 
@@ -237,7 +235,7 @@ void strandFill() {
 
 void strandMeter(int a) {
   strand.clear();
-  int p = map(a, 0, 1023-10, 0, strand.numPixels());
+  int p = map(a, 0, 255, 0, strand.numPixels());
   strandPart(0, p );
 
   Serial.print("Analog input "); 
@@ -282,7 +280,7 @@ uint32_t wheel(byte WheelPos) {
 
 
 void colorMap(int a, int minimum, int maximum) {
-  int hue = map(a, 0, 1023, minimum, maximum);
+  int hue = map(a, 0, 255, minimum, maximum);
   
   strandColorVar = wheel(hue);
 
